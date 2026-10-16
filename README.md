@@ -12,10 +12,7 @@ anyone who donates can see where the money goes.
   publish the IBAN here).
 
 > **Legal entity:** _OpenVitals MTÜ_, a non-profit association (mittetulundusühing)
-> registered in Estonia, registry code _________. The annual report filed with the
-> Estonian Business Register is the audited view; these monthly pages are the running one.
-> Donations are tax-deductible for Estonian taxpayers only if the association is on the
-> Tax and Customs Board's list of income-tax-incentive associations; it is not yet.
+> registered in Estonia, registry code 80677610.
 
 ## What a monthly report contains
 
