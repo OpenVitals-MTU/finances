@@ -1,0 +1,2 @@
+source,donors,gross,fees,net,currency,reference
+liberapay,7,12.42,0.00,12.42,EUR,Liberapay charges passed through Stripe Connect; patron count from liberapay.com on 2026-10-16; Stripe API balance transactions fetched 2026-10-16

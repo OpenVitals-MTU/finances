@@ -1,0 +1,63 @@
+{
+  "//": [
+    "How bank transactions become rows in data/. First matching rule wins. `match` is a .NET regular",
+    "expression searched in '<counterparty> <remittance text>'. Income rules only see credits, expense",
+    "rules only debits. A credit equal to a Stripe payout is recognised as an internal transfer before",
+    "these rules run, and the first rule catches the rest of them. A debit that matches nothing is written with the bank's counterparty as payee and a",
+    "description starting with 'unclassified'; `check` fails until a rule covers it.",
+    "Privacy: `payee` is what gets published. For a reimbursement to a person always set",
+    "payee = 'member reimbursement'; never let a personal name fall through to the CSV."
+  ],
+  "rules": [
+    {
+      "name": "Stripe payouts to the bank (Liberapay and direct donations are counted on the Stripe side)",
+      "match": "(?i)stripe",
+      "kind": "transfer"
+    },
+    {
+      "name": "Fly.io hosting",
+      "match": "(?i)fly\\.io",
+      "kind": "expense",
+      "category": "hosting",
+      "payee": "Fly.io",
+      "description": "landing page and docs site",
+      "paidFrom": "card"
+    },
+    {
+      "name": "Google Play developer account",
+      "match": "(?i)google\\s*\\*?\\s*play|google payments",
+      "kind": "expense",
+      "category": "store_fees",
+      "payee": "Google",
+      "paidFrom": "card"
+    },
+    {
+      "name": "Proton (card payments show the merchant only in the statement text)",
+      "match": "(?i)\\bproton\\b",
+      "kind": "expense",
+      "category": "software",
+      "payee": "Proton AG",
+      "description": "Proton e-mail and drive suite for the association",
+      "paidFrom": "card"
+    },
+    {
+      "name": "Bank fees",
+      "match": "(?i)teenustasu|kuutasu|hooldustasu|haldustasu|service fee|monthly fee|komisjonitasu",
+      "kind": "expense",
+      "category": "bank_fees",
+      "payee": "Bank",
+      "description": "account fees"
+    },
+    {
+      "name": "Own transfer between accounts",
+      "match": "(?i)omakonto|own account|sisemine ülekanne",
+      "kind": "transfer"
+    },
+    {
+      "name": "Direct donations (keep last: any other credit)",
+      "match": ".*",
+      "kind": "income",
+      "source": "bank_transfer"
+    }
+  ]
+}

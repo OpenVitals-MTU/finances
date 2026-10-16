@@ -1,0 +1,4 @@
+date,category,payee,description,amount,currency,paid_from,receipt
+2026-10-03,hosting,Fly.io,landing page and docs site,9.80,EUR,card,R-2026-024
+2026-10-11,domains,Porkbun,openvitals.app renewal,12.50,EUR,card,R-2026-025
+2026-10-20,devices,member reimbursement,second-hand Pixel 6 Pro for Wear OS testing,180.00,EUR,bank,R-2026-026

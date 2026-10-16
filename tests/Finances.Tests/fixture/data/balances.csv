@@ -1,0 +1,5 @@
+month,account,balance,currency
+2026-09,bank,500.00,EUR
+2026-09,stripe,0.00,EUR
+2026-10,bank,390.00,EUR
+2026-10,stripe,28.83,EUR

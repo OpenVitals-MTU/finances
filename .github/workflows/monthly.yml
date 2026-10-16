@@ -1,0 +1,53 @@
+name: monthly report
+
+# On the 10th of each month: pull the previous month from Stripe and the bank, write the
+# CSV rows, render the PDF, open a pull request. Every credential is a repository secret.
+# The job fails before opening anything when the bank consent has lapsed: reconnect locally
+# with `bank-connect` and `bank-session`, update the secret, and re-run this with the month.
+on:
+  schedule:
+    - cron: "0 7 10 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Month to fetch (YYYY-MM); default is last month"
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+      - name: Fetch the month
+        id: fetch
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          ENABLEBANKING_APP_ID: ${{ secrets.ENABLEBANKING_APP_ID }}
+          ENABLEBANKING_PRIVATE_KEY: ${{ secrets.ENABLEBANKING_PRIVATE_KEY }}
+          ENABLEBANKING_SESSION_ID: ${{ secrets.ENABLEBANKING_SESSION_ID }}
+        run: dotnet run --project src/Finances --nologo -- fetch ${{ inputs.month }}
+      - name: Render the PDF and the index
+        run: dotnet run --project src/Finances --nologo -- report
+      - name: Open the pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: report/${{ steps.fetch.outputs.month }}
+          title: "Monthly report ${{ steps.fetch.outputs.month }}"
+          commit-message: "finances: ${{ steps.fetch.outputs.month }} from Stripe, the bank and Liberapay"
+          draft: ${{ steps.fetch.outputs.unclassified != '0' }}
+          body: |
+            Fetched by the monthly workflow. Before merging:
+
+            - [ ] every expense row has a receipt id in the private archive
+            - [ ] `data/notes/${{ steps.fetch.outputs.month }}.md` says what the month was about
+            - [ ] the reconciliation difference is zero or explained in the notes
+
+            Unclassified payments: **${{ steps.fetch.outputs.unclassified }}** ${{ steps.fetch.outputs.unclassified_list }}
+            ${{ steps.fetch.outputs.unclassified != '0' && '— add a rule to `config/rules.json` and re-run the workflow for this month; `check` blocks the merge until then.' || '' }}
